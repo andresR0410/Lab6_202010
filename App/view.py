@@ -76,11 +76,8 @@ def main():
             print("Recursion Limit:",sys.getrecursionlimit())
             catalog = initCatalog ()
             loadData (catalog)
-            print ('Tamaño Lista libros cargados: ' + str(lt.size(catalog['booksList'])))
-            print ('Tamaño árbol Libros por titulo: ' + str(map.size(catalog['booksTitleTree'])))
-            print ('Tamaño árbol Libros por año : ' + str(map.size(catalog['yearsTree'])))
-            print ('Altura árbol por titulo: ' + str(map.height(catalog['booksTitleTree'])))
-            print ('Altura árbol por año: ' + str(map.height(catalog['yearsTree'])))
+            print ('Tamaño árbol accidentes por fecha : ' + str(map.size(catalog['datesTree'])))
+            print ('Altura árbol por fecha: ' + str(map.height(catalog['datesTree'])))
         elif int(inputs[0])==2:
             title = input("Nombre del titulo a buscar: ")
             book = controller.getBookTree(catalog,title)
@@ -107,16 +104,17 @@ def main():
             else:
                 print("No se encontraron libros para el año",year)
         elif int(inputs[0])==6:
-            years = input("Ingrese los años desde y hasta (YYYY YYYY):")
-            counter = controller.getBooksCountByYearRange(catalog, years) 
+            #Requerimento 3
+            dates = input("Ingrese las fechas desde y hasta (YYYY-MM-DD YYYY-MM-DD):")
+            counter = controller.getAccidentsByYearRange(catalog, dates) 
             if counter:
-                print("Cantidad de libros entre los años",years,":",counter)
+                print("Cantidad de accidentes entre las fechas",dates,":",counter)
             else:
-                print("No se encontraron libros para el rango de años",years)   
+                print("No se encontraron libros para el rango de años",dates)   
         else:
             sys.exit(0)
     sys.exit(0)
 
 if __name__ == "__main__":
-    #sys.setrecursionlimit(11000)
+    sys.setrecursionlimit(11000)
     main()

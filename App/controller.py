@@ -46,33 +46,23 @@ def printList (lst):
         result = "".join(str(key) + ": " + str(value) + ",  " for key, value in element.items())
         print (result)
 
-
-
-def compareratings (movie1, movie2):
-    return ( float(movie1['vote_average']) > float(movie2['vote_average']))
-
-
 # Funciones para la carga de datos 
 
-def loadBooks (catalog, sep=','):
+def loadAccidents (catalog, sep=','):
     """
     Carga los libros del archivo.  Por cada libro se toman sus autores y por 
     cada uno de ellos, se crea un arbol de autores, a dicho autor y una
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    booksfile = cf.data_dir + 'GoodReads/books.csv'
+    booksfile = cf.data_dir + 'us_accidents_dis_2016.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(booksfile, encoding="utf-8-sig") as csvfile:
         spamreader = csv.DictReader(csvfile, dialect=dialect)
         for row in spamreader: 
-            # Se adiciona el libro a la lista de libros
-            model.addBookList(catalog, row)
-            # Se adiciona el libro al mapa de libros (key=title)
-            model.addBookTree(catalog, row)
-            # Se adiciona el libro al mapa de años y rating (key=year)
-            model.addYearTree(catalog, row)
+            # Se adiciona el accidente al mapa de fecha y ciudad (key=date)
+            model.addDatesTree(catalog, row)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución carga libros:",t1_stop-t1_start," segundos")   
 
@@ -85,19 +75,17 @@ def initCatalog ():
     catalog = model.newCatalog()
     return catalog
 
-
-
 def loadData (catalog):
     """
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    loadBooks(catalog)    
+    loadAccidents(catalog)    
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
 
-def getBookTree(catalog, bookTitle):
+def getAccidentsTree(catalog, accidentId):
     t1_start = process_time() #tiempo inicial
     #book=model.getBookInList(catalog, bookTitle)
     book=model.getBookTree(catalog, bookTitle) 
@@ -129,9 +117,9 @@ def getBookByYearRating (catalog, year):
     print("Tiempo de ejecución consultar libros por año:",t1_stop-t1_start," segundos")   
     return resp
     
-def getBooksCountByYearRange (catalog, years):
+def getAccidentsByYearRange (catalog, years):
     t1_start = process_time() #tiempo inicial
-    counter = model.getBooksCountByYearRange(catalog, years)
+    counter = model.getAccidentCountByYearRange(catalog, years)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución consultar libros por rango de años:",t1_stop-t1_start," segundos")   
     return counter

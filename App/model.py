@@ -40,68 +40,50 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    catalog = {'booksTitleTree':None,'yearsTree':None,'booksList':None}
+    catalog = {'datesTree':None}
     #implementación de Black-Red Tree (brt) por default
-    catalog['booksTitleTree'] = tree.newMap ()
-    catalog['yearsTree'] = tree.newMap ()
-    catalog['booksList'] = lt.newList("ARRAY_LIST")
+    catalog['datesTree'] = tree.newMap ()
     return catalog
 
 
-def newBook (row):
+def newAccident (row):
     """
     Crea una nueva estructura para almacenar un libro 
     """
-    book = {"book_id": row['book_id'], "title":row['title'], "average_rating":row['average_rating'], "ratings_count":row['ratings_count']}
-    return book
+    accident = {"id": row['ID'], "ciudad":row['City'], "date":row['Start_Time']}
+    return accident
 
-def addBookList (catalog, row):
+def newDate (date, row):
     """
-    Adiciona libro a la lista
+    Crea una nueva estructura para almacenar los accidentes por fecha 
     """
-    books = catalog['booksList']
-    book = newBook(row)
-    lt.addLast(books, book)
+    dateNode = {"date":date, "cityMap":None, "total":1}
+    dateNode ['cityMap'] = map.newMap(11,maptype='CHAINING')
+    city = (row['City'])
+    map.put(dateNode['cityMap'],city, 1, compareByKey)
+    return dateNode
 
-def addBookTree (catalog, row):
+def addDatesTree (catalog, row):
     """
-    Adiciona libro al tree con key=title
+    Adiciona el libro al arbol por fecha key=date
     """
-    book = newBook(row)
-    #catalog['booksTitleTree'] = tree.put(catalog['booksTitleTree'], int(book['book_id']), book, greater)
-    catalog['booksTitleTree']  = tree.put(catalog['booksTitleTree'] , book['title'], book, greater)
-
-def newYear (year, row):
-    """
-    Crea una nueva estructura para almacenar los libros por año 
-    """
-    yearNode = {"year":year, "ratingMap":None, "count":1}
-    yearNode ['ratingMap'] = map.newMap(11,maptype='CHAINING')
-    intRating = round(float(row['average_rating']))
-    map.put(yearNode['ratingMap'],intRating, 1, compareByKey)
-    return yearNode
-
-def addYearTree (catalog, row):
-    """
-    Adiciona el libro al arbol anual key=original_publication_year
-    """
-    yearText= row['original_publication_year']
-    if row['original_publication_year']:
-        yearText=row['original_publication_year'][0:row['original_publication_year'].index('.')]     
-    year = strToDate(yearText,'%Y')
-    yearNode = tree.get(catalog['yearsTree'], year, greater)
-    if yearNode:
-        yearNode['count']+=1
-        intRating = round(float(row['average_rating']))
-        ratingCount = map.get(yearNode['ratingMap'], intRating, compareByKey)
-        if  ratingCount:
-            ratingCount+=1
-            map.put(yearNode['ratingMap'], intRating, ratingCount, compareByKey)
+    dateText= row['Start_Time']
+    if row['Start_Time']:
+        dateText=row['Start_Time'][0:row['Start_Time'].index(' ')]     
+    date = strToDate(dateText,'%Y-%m-%d')
+    dateNode = tree.get(catalog['datesTree'], date, greater)
+    if dateNode:
+        dateNode['total']+=1
+        city = row['City']
+        cityCount = map.get(dateNode['cityMap'], city, compareByKey)
+        if  cityCount:
+            cityCount+=1
+            map.put(dateNode['cityMap'], city, cityCount, compareByKey)
         else:
-            map.put(yearNode['ratingMap'], intRating, 1, compareByKey)
+            map.put(dateNode['cityMap'], cityCount, 1, compareByKey)
     else:
-        yearNode = newYear(year,row)
-        catalog['yearsTree']  = tree.put(catalog['yearsTree'] , year, yearNode, greater)
+        dateNode = newDate(date,row)
+        catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
 
 # Funciones de consulta
 
@@ -124,7 +106,7 @@ def selectBookTree (catalog, pos):
     """
     return tree.select(catalog['booksTitleTree'], pos) 
 
-def getBookByYearRating (catalog, year):
+def getAccidentByYearRating (catalog, year):
     """
     Retorna la cantidad de libros por rating para un año
     """
@@ -140,22 +122,29 @@ def getBookByYearRating (catalog, year):
     return None
 
 
-def getBooksCountByYearRange (catalog, years):
+def getAccidentCountByYearRange (catalog, years):
     """
     Retorna la cantidad de libros por rating para un rango de años
     """
-    
-    startYear = strToDate(years.split(" ")[0],'%Y')
-    endYear = strToDate(years.split(" ")[1],'%Y')
-    yearList = tree.valueRange(catalog['yearsTree'], startYear, endYear, greater)
+    #Retorna la cantidad total de accidentes en esos años
+    startYear = strToDate(years.split(" ")[0],'%Y-%m-%d')
+    endYear = strToDate(years.split(" ")[1],'%Y-%m-%d')
+    dateList = tree.valueRange(catalog['datesTree'], startYear, endYear, greater)
     counter = 0
-    if yearList:
-        iteraYear=it.newIterator(yearList)
-        while it.hasNext(iteraYear):
-            yearElement = it.next(iteraYear)
+    if dateList:
+        iteraDate=it.newIterator(dateList)
+        while it.hasNext(iteraDate):
+            dateElement = it.next(iteraDate)
             #print(yearElement['year'],yearElement['count'])
-            counter += yearElement['count']
+            counter += dateElement['total']
         return counter
+    #Retorna los accidentes por ciudad en esos años
+
+
+
+
+
+
     return None
 
 
