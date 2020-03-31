@@ -202,7 +202,7 @@ def isPresent (lst, element, comparefunction):
         node = lst['first']
         keyexist = False
         for keypos in range (1,size+1):
-            if (comparefunction (element, node['info'] )):
+            if (comparefunction (element, node['info'])):
                 keyexist = True
                 break
             node = node['next']

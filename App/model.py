@@ -50,7 +50,7 @@ def newAccident (row):
     """
     Crea una nueva estructura para almacenar un libro 
     """
-    accident = {"id": row['ID'], "ciudad":row['City'], "date":row['Start_Time']}
+    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time']}
     return accident
 
 def newDate (date, row):
@@ -58,7 +58,7 @@ def newDate (date, row):
     Crea una nueva estructura para almacenar los accidentes por fecha 
     """
     dateNode = {"date":date, "cityMap":None, "total":1}
-    dateNode ['cityMap'] = map.newMap(11,maptype='CHAINING')
+    dateNode ['cityMap'] = map.newMap(300,maptype='CHAINING')
     city = (row['City'])
     map.put(dateNode['cityMap'],city, 1, compareByKey)
     return dateNode
@@ -131,24 +131,35 @@ def getAccidentCountByYearRange (catalog, years):
     endYear = strToDate(years.split(" ")[1],'%Y-%m-%d')
     dateList = tree.valueRange(catalog['datesTree'], startYear, endYear, greater)
     counter = 0
+    cities=map.newMap(capacity=300, prime=109345121, maptype='PROBING')
     if dateList:
         iteraDate=it.newIterator(dateList)
         while it.hasNext(iteraDate):
             dateElement = it.next(iteraDate)
-            #print(yearElement['year'],yearElement['count'])
             counter += dateElement['total']
-        return counter
+            if dateElement['cityMap']:#Si el nodo tiene dicho map
+                    if map.isEmpty(cities):#Si cities está vacío, se le asigna el map de accidentes por ciudad del primer nodo
+                        cities=dateElement['cityMap']
+                    else: #De lo contrario, se compara cada ciudad del map de cada nodo con el map cities
+                        ciudadesNodo=map.keySet(dateElement['cityMap'])#Lista de las ciudades que tuvieron accidentes en esa fecha(nodo)
+                        valoresNodo=map.valueSet(dateElement['cityMap'])
+                        ciudadesCities=map.keySet(cities)
+                        valoresCities=map.valueSet(cities)
+                        iteraCiudades=it.newIterator(ciudadesNodo)
+                        while it.hasNext(iteraCiudades):
+                            ciudadElement=it.next(iteraCiudades)#Nombre de la ciudad que está en el cityMap de cada nodo
+                            if ciudadElement:
+                                if lt.isPresent(ciudadesCities, ciudadElement, compareByStr): #Se verifica si la ciudad está en los valores del map cities
+                                    num=map.get(cities, ciudadElement, compareByKey)
+                                    num+=map.get(dateElement['cityMap'], ciudadElement, compareByKey)
+                                    map.put(cities, ciudadElement, num, compareByKey)
+                                else:
+                                    num=map.get(dateElement['cityMap'],ciudadElement,compareByKey)
+                                    map.put(cities, ciudadElement, num, compareByKey)
+    return counter, cities
     #Retorna los accidentes por ciudad en esos años
 
-
-
-
-
-
-    return None
-
-
-
+    
 # Funciones de comparacion
 
 def compareByKey (key, element):
@@ -156,6 +167,9 @@ def compareByKey (key, element):
 
 def compareByTitle(bookTitle, element):
     return  (bookTitle == element['title'] )
+
+def compareByStr (cityName, element):
+    return (str(cityName)==str(element))
 
 def greater (key1, key2):
     if ( key1 == key2):
