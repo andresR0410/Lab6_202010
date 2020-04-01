@@ -133,7 +133,32 @@ class RBTreeTest (unittest.TestCase):
         tree = omap.put (tree, 2020, 'k', self.comparekeys)
         self.assertEqual(lt.size(omap.valueRange(tree, 2016, 2020, self.comparekeys)),5)
 
+    def test_valueSet (self):
+        tree= omap.newMap()
+        tree = omap.put (tree, 2010, 'a', self.comparekeys)
+        tree = omap.put (tree, 2011, 'b', self.comparekeys)
+        tree = omap.put (tree, 2012, 'c', self.comparekeys)
+        tree = omap.put (tree, 2013, 'd', self.comparekeys)        
+        tree = omap.put (tree, 2014, 'e', self.comparekeys)
+        tree = omap.put (tree, 2015, 'f', self.comparekeys)
+        tree = omap.put (tree, 2016, 'g', self.comparekeys)
+        tree = omap.put (tree, 2017, 'h', self.comparekeys)
+        tree = omap.put (tree, 2018, 'i', self.comparekeys)
+        tree = omap.put (tree, 2019, 'j', self.comparekeys)
+        tree = omap.put (tree, 2020, 'k', self.comparekeys)
+        values=omap.valueSet(tree)
+        self.assertEqual(lt.size(values),11)
 
+    def test_valueSet_order (self):
+        tree= omap.newMap()
+        tree = omap.put (tree, 2010, 'a', self.comparekeys)
+        tree = omap.put (tree, 2013, 'd', self.comparekeys) 
+        tree = omap.put (tree, 2011, 'b', self.comparekeys)
+        tree = omap.put (tree, 2012, 'c', self.comparekeys)       
+        tree = omap.put (tree, 2014, 'e', self.comparekeys)
+        values=omap.valueSet(tree)
+        print ("\nRBT value set")
+        print(values)
 
 if __name__ == "__main__":
     unittest.main()
