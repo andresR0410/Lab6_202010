@@ -118,6 +118,21 @@ class RBTreeTest (unittest.TestCase):
         print("\nRBT keys between R and X")
         print (kList)
 
+    def test_valueRange (self):
+        tree = omap.newMap()
+        tree = omap.put (tree, 2010, 'a', self.comparekeys)
+        tree = omap.put (tree, 2011, 'b', self.comparekeys)
+        tree = omap.put (tree, 2012, 'c', self.comparekeys)
+        tree = omap.put (tree, 2013, 'd', self.comparekeys)        
+        tree = omap.put (tree, 2014, 'e', self.comparekeys)
+        tree = omap.put (tree, 2015, 'f', self.comparekeys)
+        tree = omap.put (tree, 2016, 'g', self.comparekeys)
+        tree = omap.put (tree, 2017, 'h', self.comparekeys)
+        tree = omap.put (tree, 2018, 'i', self.comparekeys)
+        tree = omap.put (tree, 2019, 'j', self.comparekeys)
+        tree = omap.put (tree, 2020, 'k', self.comparekeys)
+        self.assertEqual(lt.size(omap.valueRange(tree, 2016, 2020, self.comparekeys)),5)
+
 
 
 if __name__ == "__main__":
