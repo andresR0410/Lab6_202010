@@ -131,6 +131,7 @@ def getAccidentCountByYearRange (catalog, years):
     endYear = strToDate(years.split(" ")[1],'%Y-%m-%d')
     dateList = tree.valueRange(catalog['datesTree'], startYear, endYear, greater)
     counter = 0
+    response=''
     cities=map.newMap(capacity=300, prime=109345121, maptype='PROBING')
     if dateList:
         iteraDate=it.newIterator(dateList)
@@ -142,9 +143,7 @@ def getAccidentCountByYearRange (catalog, years):
                         cities=dateElement['cityMap']
                     else: #De lo contrario, se compara cada ciudad del map de cada nodo con el map cities
                         ciudadesNodo=map.keySet(dateElement['cityMap'])#Lista de las ciudades que tuvieron accidentes en esa fecha(nodo)
-                        valoresNodo=map.valueSet(dateElement['cityMap'])
                         ciudadesCities=map.keySet(cities)
-                        valoresCities=map.valueSet(cities)
                         iteraCiudades=it.newIterator(ciudadesNodo)
                         while it.hasNext(iteraCiudades):
                             ciudadElement=it.next(iteraCiudades)#Nombre de la ciudad que está en el cityMap de cada nodo
@@ -156,9 +155,16 @@ def getAccidentCountByYearRange (catalog, years):
                                 else:
                                     num=map.get(dateElement['cityMap'],ciudadElement,compareByKey)
                                     map.put(cities, ciudadElement, num, compareByKey)
-    return counter, cities
-    #Retorna los accidentes por ciudad en esos años
 
+    if not map.isEmpty(cities):
+        cityList= map.keySet(cities)
+        iteracity=it.newIterator(cityList)
+        while it.hasNext(iteracity):
+            cityKey = it.next(iteracity)
+            response += str(cityKey) + ':' + str(map.get(cities,cityKey,compareByKey)) + " "
+        return counter, response
+    return None
+    #Retorna los accidentes por ciudad en esos años
     
 # Funciones de comparacion
 
