@@ -45,7 +45,7 @@ def printMenu():
     print("3- Consultar cuantos libros hay alfabeticamente menores a una llave (titulo) - (rank)")
     print("4- Buscar un libro por posición de la llave (titulo) - (select)")
     print("5- Consultar la cantidad de libros por rating para un año dado")
-    print("6- Consultar la cantidad de libros por rating para un rango de años")
+    print("6- Consultar la cantidad de accidentes por ciudad para un rango de fechas dado")
 
     print("0- Salir")
 

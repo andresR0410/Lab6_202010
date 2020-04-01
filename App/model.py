@@ -65,7 +65,7 @@ def newDate (date, row):
 
 def addDatesTree (catalog, row):
     """
-    Adiciona el libro al arbol por fecha key=date
+    Adiciona el accidente al arbol por fecha key=date
     """
     dateText= row['Start_Time']
     if row['Start_Time']:
@@ -80,7 +80,7 @@ def addDatesTree (catalog, row):
             cityCount+=1
             map.put(dateNode['cityMap'], city, cityCount, compareByKey)
         else:
-            map.put(dateNode['cityMap'], cityCount, 1, compareByKey)
+            map.put(dateNode['cityMap'], city, 1, compareByKey)
     else:
         dateNode = newDate(date,row)
         catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
