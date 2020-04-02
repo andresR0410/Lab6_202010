@@ -50,22 +50,26 @@ def newAccident (row):
     """
     Crea una nueva estructura para almacenar un libro 
     """
-    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time']}
+    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"]}
     return accident
 
 def newDate (date, row):
     """
     Crea una nueva estructura para almacenar los accidentes por fecha 
     """
-    dateNode = {"date":date, "cityMap":None, "total":1}
+    dateNode = {"date":date, "cityMap":None, "total":1, "stateMap":None,"stateMost":None}
     dateNode ['cityMap'] = map.newMap(300,maptype='CHAINING')
-    city = (row['City'])
+    stateNode["stateMap"]=map.newMap(300,maptype='CHAINING')
+    city = row['City']
+    state = row(["State"])
+    Most=row["State"]
     map.put(dateNode['cityMap'],city, 1, compareByKey)
+    map.put(stateNode['stateMap'],state, 1, compareByKey)
     return dateNode
 
 def addDatesTree (catalog, row):
     """
-    Adiciona el accidente al arbol por fecha key=date
+    Adiciona el libro al arbol por fecha key=date
     """
     dateText= row['Start_Time']
     if row['Start_Time']:
@@ -76,15 +80,25 @@ def addDatesTree (catalog, row):
         dateNode['total']+=1
         city = row['City']
         cityCount = map.get(dateNode['cityMap'], city, compareByKey)
+        state=row["State"]
+        stateCount=map.get(dateNode['stateMap'], state, comparebyKey)
+        Most=dateNode['stateMost']
+        Mostval=map.get(dateNode['stateMap'], Most, comparebyKey)
+        if stateCount:
+            stateCount+=1
+            map.put(dateNode['stateMap'], state, stateCount, compareByKey)
+        else:
+            map.put(dateNode['stateMap'], stateCount, 1, compareByKey)
+        if stateCount>Mostval:
+                dateNode['stateMost']=state
         if  cityCount:
             cityCount+=1
             map.put(dateNode['cityMap'], city, cityCount, compareByKey)
         else:
-            map.put(dateNode['cityMap'], city, 1, compareByKey)
+            map.put(dateNode['cityMap'], cityCount, 1, compareByKey)
     else:
         dateNode = newDate(date,row)
         catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
-
 # Funciones de consulta
 
 
@@ -132,7 +146,7 @@ def getAccidentCountByYearRange (catalog, years):
     dateList = tree.valueRange(catalog['datesTree'], startYear, endYear, greater)
     counter = 0
     response=''
-    cities=map.newMap(capacity=300, prime=109345121, maptype='PROBING')
+    cities=map.newMap(capacity=51, prime=109345121, maptype='CHAINING')
     if dateList:
         iteraDate=it.newIterator(dateList)
         while it.hasNext(iteraDate):
