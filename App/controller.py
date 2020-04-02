@@ -124,3 +124,9 @@ def getAccidentsByYearRange (catalog, years):
     print("Tiempo de ejecución consultar libros por rango de años:",t1_stop-t1_start," segundos")   
     return counter
 
+def getStateByDate(catalog, date):
+    t1_start = process_time() #tiempo inicial
+    counter = model.getStateByDate(catalog, date)
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución para consultar estado más accidentado en fecha dada:",t1_stop-t1_start," segundos")   
+    return counter

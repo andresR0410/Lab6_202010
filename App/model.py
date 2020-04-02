@@ -59,12 +59,12 @@ def newDate (date, row):
     """
     dateNode = {"date":date, "cityMap":None, "total":1, "stateMap":None,"stateMost":None}
     dateNode ['cityMap'] = map.newMap(300,maptype='CHAINING')
-    stateNode["stateMap"]=map.newMap(300,maptype='CHAINING')
+    dateNode["stateMap"]=map.newMap(300,maptype='CHAINING')
     city = row['City']
-    state = row(["State"])
-    Most=row["State"]
+    state = row["State"]
+    dateNode['stateMost']=row["State"]
     map.put(dateNode['cityMap'],city, 1, compareByKey)
-    map.put(stateNode['stateMap'],state, 1, compareByKey)
+    map.put(dateNode['stateMap'],state, 1, compareByKey)
     return dateNode
 
 def addDatesTree (catalog, row):
@@ -81,16 +81,17 @@ def addDatesTree (catalog, row):
         city = row['City']
         cityCount = map.get(dateNode['cityMap'], city, compareByKey)
         state=row["State"]
-        stateCount=map.get(dateNode['stateMap'], state, comparebyKey)
+        stateCount=map.get(dateNode['stateMap'], state, compareByKey)
         Most=dateNode['stateMost']
-        Mostval=map.get(dateNode['stateMap'], Most, comparebyKey)
+        Mostval=map.get(dateNode['stateMap'], Most, compareByKey)
         if stateCount:
             stateCount+=1
             map.put(dateNode['stateMap'], state, stateCount, compareByKey)
+            if stateCount>Mostval:
+                    dateNode['stateMost']=state
         else:
             map.put(dateNode['stateMap'], stateCount, 1, compareByKey)
-        if stateCount>Mostval:
-                dateNode['stateMost']=state
+            
         if  cityCount:
             cityCount+=1
             map.put(dateNode['cityMap'], city, cityCount, compareByKey)
@@ -135,6 +136,14 @@ def getAccidentByYearRating (catalog, year):
         return response
     return None
 
+
+def getStateByDate(catalog, date):
+    date = strToDate(date,'%Y-%m-%d')
+    dateNode = tree.get(catalog['datesTree'], date, greater)
+    if dateNode:
+        return dateNode['stateMost']
+    else:
+        return None
 
 def getAccidentCountByYearRange (catalog, years):
     """

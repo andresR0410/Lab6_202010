@@ -46,7 +46,7 @@ def printMenu():
     print("4- Buscar un libro por posición de la llave (titulo) - (select)")
     print("5- Consultar la cantidad de libros por rating para un año dado")
     print("6- Consultar la cantidad de accidentes por ciudad para un rango de fechas dado")
-
+    print("7: Consultar el estado con más accidentes en una fecha")
     print("0- Salir")
 
 
@@ -111,6 +111,14 @@ def main():
                 print("Cantidad de accidentes entre las fechas",dates,":",counter)
             else:
                 print("No se encontraron libros para el rango de años",dates)   
+        elif int(inputs[0])==7:
+            #Requerimento 4
+            date = input("Ingrese la fecha a consultar (YYYY-MM-DD):")
+            stateM = controller.getStateByDate(catalog, date) 
+            if stateM:
+                print("Estado con más accidentes en la fecha",date,":",stateM)
+            else:
+                print("No hay ning1ún estado con accidentes en ",date)   
         else:
             sys.exit(0)
     sys.exit(0)
