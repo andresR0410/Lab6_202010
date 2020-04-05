@@ -116,7 +116,8 @@ def rankDateMap (catalog, date):
     """
     Retorna la cantidad de llaves menores (titulos) dentro del arbol
     """
-    return tree.rank(catalog['datesTree'], date, greater)
+    dateFormat=strToDate(date,'%Y-%m-%d')
+    return tree.rank(catalog['datesTree'], dateFormat, greater)
 
 def getAccidentByDateSeverity (catalog, date):
     """
