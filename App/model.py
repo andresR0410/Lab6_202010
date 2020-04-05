@@ -40,18 +40,11 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    catalog = {'datesTree':None}
+    catalog = {'datesTree':None, 'dateIDTree':None}
     #implementación de Black-Red Tree (brt) por default
     catalog['datesTree'] = tree.newMap ()
+    catalog['dateIDTree'] = tree.newMap ()
     return catalog
-
-
-def newAccident (row):
-    """
-    Crea una nueva estructura para almacenar los accidentes por fecha
-    """
-    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"]}
-    return accident
 
 def newDate (date, row):
     """
@@ -109,15 +102,28 @@ def addDatesTree (catalog, row):
             map.put(dateNode['cityMap'], city, 1, compareByKey)
     else:
         dateNode = newDate(date,row)
-        catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
-# Funciones de consulta
+        tree.put(catalog['datesTree'] , date, dateNode, greater)
 
-def rankDateMap (catalog, date):
+def addDateID (catalog, row):
+    dateText= row['Start_Time']
+    if row['Start_Time']:
+        dateText=row['Start_Time'][0:row['Start_Time'].index(' ')]     
+        date = strToDate(dateText,'%Y-%m-%d')
+        id = row['ID']
+        key = (date, id)
+        a= None
+        tree.put(catalog['dateIDTree'],key, a, greater)
+
+
+
+# Funciones de consulta
+def rankDateMap(catalog, date):
     """
     Retorna la cantidad de llaves menores (titulos) dentro del arbol
     """
     dateFormat=strToDate(date,'%Y-%m-%d')
-    return tree.rank(catalog['datesTree'], dateFormat, greater)
+    key = (dateFormat, "A-0")
+    return tree.rank(catalog['dateIDTree'], key, greater)
 
 def getAccidentByDateSeverity (catalog, date):
     """
