@@ -39,14 +39,12 @@ operación solicitada
 
 
 def printMenu():
-    print("Bienvenido al Laboratorio 6")
+    print("Bienvenido al Reto 3")
     print("1- Cargar información")
-    print("2- Buscar libro por llave (titulo) ")
-    print("3- Consultar cuantos libros hay alfabeticamente menores a una llave (titulo) - (rank)")
-    print("4- Buscar un libro por posición de la llave (titulo) - (select)")
-    print("5- Consultar la cantidad de libros por rating para un año dado")
-    print("6- Consultar la cantidad de accidentes por ciudad para un rango de fechas dado")
-    print("7: Consultar el estado con más accidentes en una fecha")
+    print("2- Buscar accidentes anteriores a una fecha")
+    print("3- Consultar la cantidad de accidentes por severidad para un fecha dada (aaaa-mm-dd)")
+    print("4- Consultar la cantidad de accidentes por ciudad para un rango de fechas dado")
+    print("5- Consultar el estado con más accidentes en una fecha")
     print("0- Salir")
 
 
@@ -79,31 +77,17 @@ def main():
             print ('Tamaño árbol accidentes por fecha : ' + str(map.size(catalog['datesTree'])))
             print ('Altura árbol por fecha: ' + str(map.height(catalog['datesTree'])))
         elif int(inputs[0])==2:
-            title = input("Nombre del titulo a buscar: ")
-            book = controller.getBookTree(catalog,title)
-            if book:
-                print("Libro encontrado:",book['title'],book['average_rating'])
-            else:
-                print("Libro No encontrado")
+            date = input("Fecha del accidente a buscar (YYYY-MM-DD):")
+            rank = controller.rankDateMap(catalog,date)
+            print("Hay ",rank," accidentes que sucedieron antes de "+date)
         elif int(inputs[0])==3:
-            title = input("Nombre del titulo a buscar (rank): ")
-            rank = controller.rankBookTree(catalog,title) 
-            print("Hay ",rank," titulos menores (rank) que "+title)
-        elif int(inputs[0])==4:
-            pos = int(input("Posición del k-esimo titulo del libro (select) a obtener: "))
-            book = controller.selectBookTree(catalog, pos)
-            if book:
-                print("Libro en posición:",pos,":",book['value']['title'],book['value']['average_rating'])
-            else:
-                print("Libro no encotrado en posicion: ",pos)
-        elif int(inputs[0])==5:
-            year = input("Ingrese el año a consultar:")
-            response = controller.getBookByYearRating(catalog, year) 
-            if response: 
+            date = input("Ingrese la fecha a consultar:")
+            response = controller.getAccidentByDateSeverity(catalog, date) 
+            if response:
                 print(response)
             else:
-                print("No se encontraron libros para el año",year)
-        elif int(inputs[0])==6:
+                print("No se encontraron accidenrtes para el día",date) 
+        elif int(inputs[0])==4:
             #Requerimento 3
             dates = input("Ingrese las fechas desde y hasta (YYYY-MM-DD YYYY-MM-DD):")
             counter = controller.getAccidentsByYearRange(catalog, dates) 
@@ -111,7 +95,7 @@ def main():
                 print("Cantidad de accidentes entre las fechas",dates,":",counter)
             else:
                 print("No se encontraron libros para el rango de años",dates)   
-        elif int(inputs[0])==7:
+        elif int(inputs[0])==5:
             #Requerimento 4
             date = input("Ingrese la fecha a consultar (YYYY-MM-DD):")
             stateM = controller.getStateByDate(catalog, date) 

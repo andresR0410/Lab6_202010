@@ -84,39 +84,13 @@ def loadData (catalog):
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
-
-def getAccidentsTree(catalog, accidentId):
+def rankDateMap(catalog, date):
     t1_start = process_time() #tiempo inicial
-    #book=model.getBookInList(catalog, bookTitle)
-    book=model.getBookTree(catalog, bookTitle) 
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución buscar libro:",t1_stop-t1_start," segundos")   
-    if book:
-        return book
-    else:
-        return None
-
-def rankBookTree(catalog, bookTitle):
-    t1_start = process_time() #tiempo inicial
-    rank=model.rankBookTree(catalog, bookTitle)  
+    rank=model.rankDateMap(catalog, date)  
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución buscar libro (rank):",t1_stop-t1_start," segundos")   
     return rank
 
-def selectBookTree(catalog, pos):
-    t1_start = process_time() #tiempo inicial
-    rank=model.selectBookTree(catalog, pos) 
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución buscar libro (rank):",t1_stop-t1_start," segundos")   
-    return rank
-
-def getBookByYearRating (catalog, year):
-    t1_start = process_time() #tiempo inicial
-    resp = model.getBookByYearRating(catalog, year)
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución consultar libros por año:",t1_stop-t1_start," segundos")   
-    return resp
-    
 def getAccidentsByYearRange (catalog, years):
     t1_start = process_time() #tiempo inicial
     counter = model.getAccidentCountByYearRange(catalog, years)
@@ -130,3 +104,10 @@ def getStateByDate(catalog, date):
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución para consultar estado más accidentado en fecha dada:",t1_stop-t1_start," segundos")   
     return counter
+
+def getAccidentByDateSeverity (catalog, date):
+    t1_start = process_time() #tiempo inicial
+    resp = model.getAccidentByDateSeverity(catalog, date)
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución consultar accidentes por fecha:",t1_stop-t1_start," segundos")   
+    return resp

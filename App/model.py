@@ -48,7 +48,7 @@ def newCatalog():
 
 def newAccident (row):
     """
-    Crea una nueva estructura para almacenar un libro 
+    Crea una nueva estructura para almacenar los accidentes por fecha
     """
     accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"]}
     return accident
@@ -57,19 +57,22 @@ def newDate (date, row):
     """
     Crea una nueva estructura para almacenar los accidentes por fecha 
     """
-    dateNode = {"date":date, "cityMap":None, "total":1, "stateMap":None,"stateMost":None}
+    dateNode = {"date":date, "severityMap":None, "cityMap":None, "total":1, "stateMap":None,"stateMost":None}
+    dateNode['severityMap']=map.newMap(11,maptype='CHAINING')
     dateNode ['cityMap'] = map.newMap(300,maptype='CHAINING')
     dateNode["stateMap"]=map.newMap(300,maptype='CHAINING')
+    severity = int(row['Severity'])
     city = row['City']
     state = row["State"]
     dateNode['stateMost']=row["State"]
+    map.put(dateNode['severityMap'], severity, 1, compareByKey)
     map.put(dateNode['cityMap'],city, 1, compareByKey)
     map.put(dateNode['stateMap'],state, 1, compareByKey)
     return dateNode
 
 def addDatesTree (catalog, row):
     """
-    Adiciona el libro al arbol por fecha key=date
+    Adiciona el accidente al arbol por día key=Start_Time
     """
     dateText= row['Start_Time']
     if row['Start_Time']:
@@ -78,48 +81,57 @@ def addDatesTree (catalog, row):
     dateNode = tree.get(catalog['datesTree'], date, greater)
     if dateNode:
         dateNode['total']+=1
+        severity = int(row['Severity'])
+        severityCount = map.get(dateNode['severityMap'], severity, compareByKey)
         city = row['City']
         cityCount = map.get(dateNode['cityMap'], city, compareByKey)
         state=row["State"]
         stateCount=map.get(dateNode['stateMap'], state, compareByKey)
         Most=dateNode['stateMost']
         Mostval=map.get(dateNode['stateMap'], Most, compareByKey)
+        if  severityCount:
+            severityCount+=1
+            map.put(dateNode['severityMap'], severity, severityCount, compareByKey)
+        else:
+            map.put(dateNode['severityMap'], severity, 1, compareByKey)
         if stateCount:
             stateCount+=1
             map.put(dateNode['stateMap'], state, stateCount, compareByKey)
             if stateCount>Mostval:
                     dateNode['stateMost']=state
         else:
-            map.put(dateNode['stateMap'], stateCount, 1, compareByKey)
+            map.put(dateNode['stateMap'], state, 1, compareByKey)
             
         if  cityCount:
             cityCount+=1
             map.put(dateNode['cityMap'], city, cityCount, compareByKey)
         else:
-            map.put(dateNode['cityMap'], cityCount, 1, compareByKey)
+            map.put(dateNode['cityMap'], city, 1, compareByKey)
     else:
         dateNode = newDate(date,row)
         catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
 # Funciones de consulta
 
-
-def getBookTree (catalog, bookTitle):
-    """
-    Retorna el libro desde el mapa a partir del titulo (key)
-    """
-    return tree.get(catalog['booksTitleTree'], bookTitle, greater)
-
-def rankBookTree (catalog, bookTitle):
+def rankDateMap (catalog, date):
     """
     Retorna la cantidad de llaves menores (titulos) dentro del arbol
     """
-    return tree.rank(catalog['booksTitleTree'], bookTitle, greater)
+    return tree.rank(catalog['datesTree'], date, greater)
 
-def selectBookTree (catalog, pos):
+def getAccidentByDateSeverity (catalog, date):
     """
-    Retorna la operación select (titulos) dentro del arbol
+    Retorna la cantidad de libros para un año y con un rating dado
     """
-    return tree.select(catalog['booksTitleTree'], pos) 
+    dateElement=tree.get(catalog['datesTree'], strToDate(date,'%Y-%m-%d'), greater)
+    response=''
+    if dateElement:
+        severityList = map.keySet(dateElement['severityMap'])
+        iteraSev=it.newIterator(severityList)
+        while it.hasNext(iteraSev):
+            severityKey = it.next(iteraSev)
+            response += 'Severity '+str(severityKey) + ':' + str(map.get(dateElement['severityMap'],severityKey,compareByKey)) + '\n'
+        return response
+    return None
 
 def getAccidentByYearRating (catalog, year):
     """
