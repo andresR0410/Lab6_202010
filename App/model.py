@@ -40,7 +40,7 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    catalog = {'datesTree':None, "latTree":None}
+    catalog = {'datesTree':None}
     #implementación de Black-Red Tree (brt) por default
     catalog['datesTree'] = tree.newMap ()
     return catalog
@@ -50,7 +50,7 @@ def newAccident (row):
     """
     Crea una nueva estructura para almacenar los accidentes por fecha
     """
-    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"], "Latitude":row["Start_Lat"],"Longitude":row["Start_Lng"]}
+    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"]}
     return accident
 
 def newDate (date, row):
@@ -61,7 +61,6 @@ def newDate (date, row):
     dateNode['severityMap']=map.newMap(11,maptype='CHAINING')
     dateNode ['cityMap'] = map.newMap(300,maptype='CHAINING')
     dateNode["stateMap"]=map.newMap(300,maptype='CHAINING')
-    dateNode['daysMap']=map.newMap(7,maptype="CHAINING")
     severity = int(row['Severity'])
     city = row['City']
     state = row["State"]
@@ -70,29 +69,6 @@ def newDate (date, row):
     map.put(dateNode['cityMap'],city, 1, compareByKey)
     map.put(dateNode['stateMap'],state, 1, compareByKey)
     return dateNode
-
-def newLat(Lat,row):
-    latNode={'Latitude':Lat,"Altitude":None, "daysMap":None, 'total':1}
-    latNode['Altitude']=lt.newList()
-    lt.insertElement(latNode['Altitude'],row['Start_Alt'],1)
-    day=strToDate(row['date'],"%A")
-    map.put(dateNode["daysMap"],day,1,compareByKey)
-    return latNode
-
-def addLatTree (catalog, row):
-    if row['Start_Lat']:
-        lat=row['Start_Lat']
-        latNode=tree.get(catalog['latTree'],lat,greater)
-        if latNode:
-            latNode['total']+=1
-            day=strToDate(row['Start_Time'][0:row['Start_Time'].index(' ')], "%A")
-            if map.contains(dateNode["daysMap"],day,compareByKey):
-                count=map.get(dateNode["daysMap"],day,compareByKey)
-                count+=1
-                map.put(dateNode["daysMap"],day, count, compareByKey)
-    else:
-        latNode=newLat(lat,row)
-        catalog['latTree']  = tree.put(catalog['latTree'], lat, latNode, greater)
 
 def addDatesTree (catalog, row):
     """
@@ -214,7 +190,7 @@ def getAccidentCountByYearRange (catalog, years):
         iteraDate=it.newIterator(dateList)
         while it.hasNext(iteraDate):
             dateElement = it.next(iteraDate)
-            counter += 1
+            counter += dateElement['total']
             if dateElement['cityMap']:#Si el nodo tiene dicho map
                     if map.isEmpty(cities):#Si cities está vacío, se le asigna el map de accidentes por ciudad del primer nodo
                         cities=dateElement['cityMap']
@@ -243,58 +219,7 @@ def getAccidentCountByYearRange (catalog, years):
     return None
     #Retorna los accidentes por ciudad en esos años
     
-def getAccidentsByRadius (catalog, coordinates, radius):
-    
-
-    counter = 0 #Cuenta el total de accidentes en radio dado
-    response=''
-    days=map.newMap(capacity=51, prime=109345121, maptype='CHAINING')
-    coordinates=coordinates.split(" ")
-    latList=tree.valueRange(catalog['latTree'], float(coordinates[0]), float(coordinates[0])+float(radius), greater)#Lista de las fechas (nodos)
-    if latList:
-        iteraLat=it.newIterator(latList)
-        while it.hasNext(iteraLat):
-                dateElement = it.next(iteraLat)# Cada fecha/nodo
-                Lat1=float(dateElement["Latitude"])
-                Lng1=float(dateElement["Longitude"])
-                Lat2=float(coordinates[0])
-                Lng2=float(coordinates[1])
-                distance=distanceByCoordinates(Lat1,Lng1,Lat2,Lng2)
-                if dateElement['daysMap'] and distance<radius:#Si tiene el map de accidentes por días y la distancia a las coordenadas es menor al radio dado
-                        counter += latNode['total']#Se suma el total de accidentes
-                        if map.isEmpty(days):#Si daysMap está vacío, se le asigna el map de días por ciudad del primer nodo
-                            days=dateElement['daysMap']
-                        else: #De lo contrario, se compara cada ciudad del map de cada nodo con el map days
-                            diasNodo=map.keySet(dateElement['daysMap'])#Lista de los días que tuvieron accidentes en esa fecha(nodo)
-                            diasDays=map.keySet(days)
-                            iteraDays=it.newIterator(diasNodo)
-                            while it.hasNext(iteraDays):
-                                dayElement=it.next(iteraDays)#Cada día con accidentes en esa fecha
-                                if dayElement:
-                                    if lt.isPresent(diasDays, dayElement,compareByKey): #Se verifica si la ciudad está en los valores del map days
-                                        num=map.get(days, dayElement, compareByKey)
-                                        counter+=num
-                                        num+=map.get(dateElement['daysMap'], dayElement, compareByKey)
-                                        map.put(days, dayElement, num, compareByKey)
-                                    else:
-                                        num=map.get(dateElement['daysMap'],dayElement,compareByKey)
-                                        map.put(days, dayElement, num, compareByKey)
-
-    if not map.isEmpty(days):
-        daysList= map.keySet(days)
-        iteradays=it.newIterator(daysList)
-        while it.hasNext(iteradays):
-            dayKey = it.next(iteradays)
-            response += str(dayKey) + ':' + str(map.get(days,dayyKey,compareByKey)) + " "
-        return counter, response
-    return None
-
-
-
 # Funciones de comparacion
-
-def distanceByCoordinates(Lat1,Long1, Lat2, Long2):
-    return (( (Lat1-Lat2)**2 + (Long1-Long2)**2 )**0.5)
 
 def compareByKey (key, element):
     return  (key == element['key'] )  
