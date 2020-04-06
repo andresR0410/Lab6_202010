@@ -76,8 +76,6 @@ def main():
             loadData (catalog)
             print ('Tamaño árbol accidentes por fecha : ' + str(map.size(catalog['datesTree'])))
             print ('Altura árbol por fecha: ' + str(map.height(catalog['datesTree'])))
-            print ('Tamaño árbol accidentes por fecha e id : ' + str(map.size(catalog['dateIDTree'])))
-            print ('Altura árbol por fecha e id: ' + str(map.height(catalog['dateIDTree'])))
         elif int(inputs[0])==2:
             date = input("Fecha del accidente a buscar (YYYY-MM-DD):")
             rank = controller.rankDateMap(catalog,date)

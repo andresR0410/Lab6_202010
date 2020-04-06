@@ -63,9 +63,8 @@ def loadAccidents (catalog, sep=','):
         for row in spamreader: 
             # Se adiciona el accidente al mapa de fecha y ciudad (key=date)
             model.addDatesTree(catalog, row)
-            model.addDateID(catalog, row)
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución cargar accidentes:",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución carga libros:",t1_stop-t1_start," segundos")   
 
 
 
@@ -87,16 +86,16 @@ def loadData (catalog):
 
 def rankDateMap(catalog, date):
     t1_start = process_time() #tiempo inicial
-    rank=model.rankDateMap(catalog, date)  
+    rank=model.getPrevious(catalog, date)  
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución buscar accidente(rank):",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución buscar libro (rank):",t1_stop-t1_start," segundos")   
     return rank
 
 def getAccidentsByYearRange (catalog, years):
     t1_start = process_time() #tiempo inicial
     counter = model.getAccidentCountByYearRange(catalog, years)
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución consultar accidente por rango de años:",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución consultar libros por rango de años:",t1_stop-t1_start," segundos")   
     return counter
 
 def getStateByDate(catalog, date):

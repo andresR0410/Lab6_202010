@@ -40,11 +40,18 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    catalog = {'datesTree':None, 'dateIDTree':None}
+    catalog = {'datesTree':None}
     #implementación de Black-Red Tree (brt) por default
     catalog['datesTree'] = tree.newMap ()
-    catalog['dateIDTree'] = tree.newMap ()
     return catalog
+
+
+def newAccident (row):
+    """
+    Crea una nueva estructura para almacenar los accidentes por fecha
+    """
+    accident = {"id": row['ID'], "city":row['City'], "date":row['Start_Time'], 'state':row["State"]}
+    return accident
 
 def newDate (date, row):
     """
@@ -102,28 +109,15 @@ def addDatesTree (catalog, row):
             map.put(dateNode['cityMap'], city, 1, compareByKey)
     else:
         dateNode = newDate(date,row)
-        tree.put(catalog['datesTree'] , date, dateNode, greater)
-
-def addDateID (catalog, row):
-    dateText= row['Start_Time']
-    if row['Start_Time']:
-        dateText=row['Start_Time'][0:row['Start_Time'].index(' ')]     
-        date = strToDate(dateText,'%Y-%m-%d')
-        id = row['ID']
-        key = (date, id)
-        a= None
-        tree.put(catalog['dateIDTree'],key, a, greater)
-
-
-
+        catalog['datesTree']  = tree.put(catalog['datesTree'] , date, dateNode, greater)
 # Funciones de consulta
-def rankDateMap(catalog, date):
+
+def rankDateMap (catalog, date):
     """
     Retorna la cantidad de llaves menores (titulos) dentro del arbol
     """
     dateFormat=strToDate(date,'%Y-%m-%d')
-    key = (dateFormat, "A-0")
-    return tree.rank(catalog['dateIDTree'], key, greater)
+    return tree.rank(catalog['datesTree'], dateFormat, greater)
 
 def getAccidentByDateSeverity (catalog, date):
     """
@@ -163,6 +157,23 @@ def getStateByDate(catalog, date):
         return dateNode['stateMost']
     else:
         return None
+
+def getPrevious (catalog, dateText):
+    arbol= catalog['datesTree']
+    accidentes=0
+    date= strToDate(dateText, '%Y-%m-%d')
+    #nodeRank= tree.rank(arbol, date, greater)
+    dateList= tree.keySet(arbol)
+    #dateRank=dateList[0:nodeRank]
+    iteraDate=it.newIterator(dateList)
+    while it.hasNext(iteraDate):
+        dateElement = it.next(iteraDate)
+        if dateElement<date:
+            dia=tree.get(arbol, dateElement, greater)
+            accidentes+=dia['total']
+    return accidentes
+        
+
 
 def getAccidentCountByYearRange (catalog, years):
     """
@@ -234,4 +245,3 @@ def strToDate(date_string, format):
         return datetime.strptime(date_string,format)
     except:
         return datetime.strptime('1900', '%Y')
-
