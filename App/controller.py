@@ -63,6 +63,7 @@ def loadAccidents (catalog, sep=','):
         for row in spamreader: 
             # Se adiciona el accidente al mapa de fecha y ciudad (key=date)
             model.addDatesTree(catalog, row)
+            model.addLatTree(catalog, row)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución carga libros:",t1_stop-t1_start," segundos")   
 
