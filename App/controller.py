@@ -111,3 +111,10 @@ def getAccidentByDateSeverity (catalog, date):
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución consultar accidentes por fecha:",t1_stop-t1_start," segundos")   
     return resp
+
+def getAccidentsByRadius (catalog, coordenates):
+    t1_start = process_time() #tiempo inicial
+    responses = model.getAccidentsByRadius(catalog, coordenates, radius)
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución consultar accidentes por fecha:",t1_stop-t1_start," segundos")   
+    return responses

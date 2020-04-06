@@ -45,6 +45,7 @@ def printMenu():
     print("3- Consultar la cantidad de accidentes por severidad para un fecha dada (aaaa-mm-dd)")
     print("4- Consultar la cantidad de accidentes por ciudad para un rango de fechas dado")
     print("5- Consultar el estado con más accidentes en una fecha")
+    print("6- Consultar accidentes (totales y por día de la semana) a un radio de unas coordenadas dadas")
     print("0- Salir")
 
 
@@ -103,6 +104,12 @@ def main():
                 print("Estado con más accidentes en la fecha",date,":",stateM)
             else:
                 print("No hay ning1ún estado con accidentes en ",date)   
+        elif int(inputs[0])==6:
+            coord=input("Ingrese la latitud y longitud del punto inicial separados por espacio: ")
+            radio=input("Ingrese el radio  (en kilómetros) para el cual se verificará: ")
+            retorno=controller.getAccidentsByRadius(catalog, coord, radius)
+            print("Los accidentes por día y el total de accidentes a ",radio,"millas del punto ",coord)
+            #Requerimento 4
         else:
             sys.exit(0)
     sys.exit(0)
